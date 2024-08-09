@@ -1,48 +1,47 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { matrixes, positions } from "../../lib/data";
 
 const StyledMatrix = styled.div`
   display: grid;
   position: absolute;
   place-content: center;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   font-size: 40px;
   background: green;
+
+  .game-end {
+    display: grid;
+    place-content: center;
+    font-size: 70px;
+  }
 `;
 
-export function Matrix() {
-  const [map, setMap] = useState([
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
-    [1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1],
-    [1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1],
-    [1, 2, 2, 2, 1, 1, 5, 1, 1, 2, 2, 2, 1],
-    [1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1],
-    [1, 2, 1, 1, 2, 2, 1, 2, 2, 1, 1, 2, 1],
-    [1, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  ]);
+export function Matrix({ level, onLevelClear }) {
+  const chickenSpeed = 100;
+  const [map, setMap] = useState(matrixes[level - 1]);
 
-  const [currentPlayerPosition, setCurrentPlayerPosition] = useState({
-    x: 6,
-    y: 4,
-  });
-  const [currentChickenPosition, setCurrentChickenPosition] = useState({
-    x: 7,
-    y: 7,
-  });
-  const [currentChickenPosition2, setCurrentChickenPosition2] = useState({
-    x: 1,
-    y: 1,
-  });
+  const [currentPlayerPosition, setCurrentPlayerPosition] = useState(
+    positions[level - 1].player
+  );
+  const [currentChickenPosition, setCurrentChickenPosition] = useState(
+    positions[level - 1].chicken1
+  );
+  const [currentChickenPosition2, setCurrentChickenPosition2] = useState(
+    positions[level - 1].chicken2
+  );
 
   const [won, setWon] = useState(false);
   const [lost, setLost] = useState(false);
 
   useEffect(() => {
+    setMap(matrixes[level - 1]);
+    setCurrentPlayerPosition(positions[level - 1].player);
+    setCurrentChickenPosition(positions[level - 1].chicken1);
+    setCurrentChickenPosition2(positions[level - 1].chicken2);
     document.querySelector("#matrix").focus();
-  }, []);
+  }, [level]);
 
   function checkPossibleMove(currentDirection, currentPosition) {
     return (
@@ -98,11 +97,10 @@ export function Matrix() {
         }
       }
     }
-
     const moveChickenInterval = setInterval(() => {
       moveChicken(currentChickenPosition, setCurrentChickenPosition);
       moveChicken(currentChickenPosition2, setCurrentChickenPosition2);
-    }, 100);
+    }, chickenSpeed);
 
     return () => {
       clearInterval(moveChickenInterval);
@@ -148,39 +146,43 @@ export function Matrix() {
 
   useEffect(() => {
     if (map.every((row) => !row.includes(2))) {
-      setWon(true);
+      if (level === 2) {
+        setWon(true);
+      } else {
+        onLevelClear();
+      }
     }
   }, [map]);
 
-  return !won && !lost ? (
+  return (
     <StyledMatrix id="matrix" tabIndex={0} onKeyDown={handleMove}>
-      {map.map((row, index) => {
-        return (
-          <p key={index}>
-            {row.map((cell, cellIndex) => {
-              if (
-                (index === currentChickenPosition.y &&
-                  cellIndex === currentChickenPosition.x) ||
-                (index === currentChickenPosition2.y &&
-                  cellIndex === currentChickenPosition2.x)
-              ) {
-                return " 🐓 ";
-              }
-              return cell === 1
-                ? " 🟫 "
-                : cell === 2
-                ? " 💊 "
-                : cell === 3
-                ? " 🟩 "
-                : " 🟡 ";
-            })}
-          </p>
-        );
-      })}
+      {!lost && !won ? (
+        map.map((row, index) => {
+          return (
+            <p key={index}>
+              {row.map((cell, cellIndex) => {
+                if (
+                  (index === currentChickenPosition.y &&
+                    cellIndex === currentChickenPosition.x) ||
+                  (index === currentChickenPosition2.y &&
+                    cellIndex === currentChickenPosition2.x)
+                ) {
+                  return " 🐓 ";
+                }
+                return cell === 1
+                  ? " 🟫 "
+                  : cell === 2
+                  ? " 💊 "
+                  : cell === 3
+                  ? " 🟩 "
+                  : " 🌝 ";
+              })}
+            </p>
+          );
+        })
+      ) : (
+        <div className="game-end">{lost ? "🐓Game Over🐓" : "Game Won 🌝"}</div>
+      )}
     </StyledMatrix>
-  ) : lost ? (
-    <h1>Game Lost</h1>
-  ) : (
-    <h1>Game Won</h1>
   );
 }
