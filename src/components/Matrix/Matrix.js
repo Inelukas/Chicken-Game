@@ -32,6 +32,10 @@ export function Matrix() {
     x: 7,
     y: 7,
   });
+  const [currentChickenPosition2, setCurrentChickenPosition2] = useState({
+    x: 1,
+    y: 1,
+  });
 
   const [won, setWon] = useState(false);
   const [lost, setLost] = useState(false);
@@ -39,41 +43,6 @@ export function Matrix() {
   useEffect(() => {
     document.querySelector("#matrix").focus();
   }, []);
-
-  useEffect(() => {
-    function moveChicken() {
-      if (lost || won) return; // Stop movement if the game is over
-
-      const randomNumber = Math.floor(Math.random() * 4);
-      const directionMap = ["ArrowRight", "ArrowUp", "ArrowLeft", "ArrowDown"];
-      const currentChickenDirection = directionMap[randomNumber];
-
-      const possibleMove = checkPossibleMove(
-        currentChickenDirection,
-        currentChickenPosition
-      );
-
-      if (possibleMove) {
-        const newChickenPosition = getNewPosition(
-          currentChickenDirection,
-          currentChickenPosition
-        );
-
-        // Check if chicken hits the player
-        if (
-          newChickenPosition.x === currentPlayerPosition.x &&
-          newChickenPosition.y === currentPlayerPosition.y
-        ) {
-          setLost(true);
-        } else {
-          setCurrentChickenPosition(newChickenPosition);
-        }
-      }
-    }
-
-    const moveChickenInterval = setInterval(moveChicken, 200);
-    return () => clearInterval(moveChickenInterval);
-  });
 
   function checkPossibleMove(currentDirection, currentPosition) {
     return (
@@ -100,6 +69,52 @@ export function Matrix() {
       : null;
   }
 
+  useEffect(() => {
+    function moveChicken(chickenPosition, setChickenPosition) {
+      if (lost || won) return;
+
+      const randomNumber = Math.floor(Math.random() * 4);
+      const directionMap = ["ArrowRight", "ArrowUp", "ArrowLeft", "ArrowDown"];
+      const currentChickenDirection = directionMap[randomNumber];
+
+      const possibleMove = checkPossibleMove(
+        currentChickenDirection,
+        chickenPosition
+      );
+
+      if (possibleMove) {
+        const newChickenPosition = getNewPosition(
+          currentChickenDirection,
+          chickenPosition
+        );
+
+        if (
+          newChickenPosition.x === currentPlayerPosition.x &&
+          newChickenPosition.y === currentPlayerPosition.y
+        ) {
+          setLost(true);
+        } else {
+          setChickenPosition(newChickenPosition);
+        }
+      }
+    }
+
+    const moveChickenInterval = setInterval(() => {
+      moveChicken(currentChickenPosition, setCurrentChickenPosition);
+      moveChicken(currentChickenPosition2, setCurrentChickenPosition2);
+    }, 100);
+
+    return () => {
+      clearInterval(moveChickenInterval);
+    };
+  }, [
+    currentChickenPosition,
+    currentChickenPosition2,
+    currentPlayerPosition,
+    lost,
+    won,
+  ]);
+
   function handleMove(event) {
     const currentKey = event.key;
 
@@ -111,17 +126,18 @@ export function Matrix() {
         currentPlayerPosition
       );
 
-      // Check if player hits the chicken
       if (
-        newPlayerPosition.x === currentChickenPosition.x &&
-        newPlayerPosition.y === currentChickenPosition.y
+        (newPlayerPosition.x === currentChickenPosition.x &&
+          newPlayerPosition.y === currentChickenPosition.y) ||
+        (newPlayerPosition.x === currentChickenPosition2.x &&
+          newPlayerPosition.y === currentChickenPosition2.y)
       ) {
         setLost(true);
       } else {
         setMap((prevMap) => {
           const newMap = [...prevMap];
-          newMap[currentPlayerPosition.y][currentPlayerPosition.x] = 3; // Reset to grass
-          newMap[newPlayerPosition.y][newPlayerPosition.x] = 5; // Set new player position
+          newMap[currentPlayerPosition.y][currentPlayerPosition.x] = 3;
+          newMap[newPlayerPosition.y][newPlayerPosition.x] = 5;
           return newMap;
         });
 
@@ -143,8 +159,10 @@ export function Matrix() {
           <p key={index}>
             {row.map((cell, cellIndex) => {
               if (
-                index === currentChickenPosition.y &&
-                cellIndex === currentChickenPosition.x
+                (index === currentChickenPosition.y &&
+                  cellIndex === currentChickenPosition.x) ||
+                (index === currentChickenPosition2.y &&
+                  cellIndex === currentChickenPosition2.x)
               ) {
                 return " 🐓 ";
               }
