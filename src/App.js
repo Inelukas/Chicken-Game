@@ -7,7 +7,7 @@ import { Info } from "./components/Info/Info";
 
 function App() {
   const [gameOn, setGameOn] = useState(false);
-  const [level, setLevel] = useState(2);
+  const [level, setLevel] = useState(0);
   const [lives, setLives] = useState(3);
   const [won, setWon] = useState(false);
   const [lost, setLost] = useState(false);
