@@ -10,40 +10,43 @@ const StyledMatrix = styled.div`
   height: 100%;
   font-size: 40px;
   background: green;
-
-  .game-end {
-    display: grid;
-    place-content: center;
-    font-size: 70px;
-  }
 `;
 
-export function Matrix({ level, onLevelClear }) {
-  const chickenSpeed = 100;
-  const [map, setMap] = useState(matrixes[level - 1]);
-
+export function Matrix({
+  level,
+  onLevelClear,
+  gameOn,
+  onLoseLife,
+  lives,
+  onGameOn,
+  onLost,
+  onWon,
+  lost,
+  won,
+}) {
+  const chickenSpeed = level > 0 ? 100 : 200;
+  const [map, setMap] = useState(matrixes[level]);
   const [currentPlayerPosition, setCurrentPlayerPosition] = useState(
-    positions[level - 1].player
+    positions[level].player
   );
   const [currentChickenPosition, setCurrentChickenPosition] = useState(
-    positions[level - 1].chicken1
+    positions[level].chicken1
   );
   const [currentChickenPosition2, setCurrentChickenPosition2] = useState(
-    positions[level - 1].chicken2
+    positions[level].chicken2
+  );
+  const [currentChickenPosition3, setCurrentChickenPosition3] = useState(
+    positions[level]?.chicken3
   );
 
-  const [won, setWon] = useState(false);
-  const [lost, setLost] = useState(false);
-
   useEffect(() => {
-    setMap(matrixes[level - 1]);
-    setCurrentPlayerPosition(positions[level - 1].player);
-    setCurrentChickenPosition(positions[level - 1].chicken1);
-    setCurrentChickenPosition2(positions[level - 1].chicken2);
     document.querySelector("#matrix").focus();
-  }, [level]);
+  }, [level, gameOn]);
 
   function checkPossibleMove(currentDirection, currentPosition) {
+    if (!gameOn) {
+      return;
+    }
     return (
       (currentDirection === "ArrowRight" &&
         map[currentPosition.y][currentPosition.x + 1] !== 1) ||
@@ -54,6 +57,14 @@ export function Matrix({ level, onLevelClear }) {
       (currentDirection === "ArrowDown" &&
         map[currentPosition.y + 1][currentPosition.x] !== 1)
     );
+  }
+
+  function resetPositions() {
+    setMap(matrixes[level]);
+    setCurrentPlayerPosition(positions[level].player);
+    setCurrentChickenPosition(positions[level].chicken1);
+    setCurrentChickenPosition2(positions[level].chicken2);
+    setCurrentChickenPosition3(positions[level]?.chicken3 || null);
   }
 
   function getNewPosition(currentDirection, currentPosition) {
@@ -91,33 +102,44 @@ export function Matrix({ level, onLevelClear }) {
           newChickenPosition.x === currentPlayerPosition.x &&
           newChickenPosition.y === currentPlayerPosition.y
         ) {
-          setLost(true);
+          if (lives > 1) {
+            resetPositions();
+            onLoseLife();
+          } else {
+            onLost();
+          }
         } else {
           setChickenPosition(newChickenPosition);
         }
       }
     }
-    const moveChickenInterval = setInterval(() => {
-      moveChicken(currentChickenPosition, setCurrentChickenPosition);
-      moveChicken(currentChickenPosition2, setCurrentChickenPosition2);
-    }, chickenSpeed);
+    if (gameOn) {
+      const moveChickenInterval = setInterval(() => {
+        moveChicken(currentChickenPosition, setCurrentChickenPosition);
+        moveChicken(currentChickenPosition2, setCurrentChickenPosition2);
+        if (currentChickenPosition3) {
+          moveChicken(currentChickenPosition3, setCurrentChickenPosition3);
+        }
+      }, chickenSpeed);
 
-    return () => {
-      clearInterval(moveChickenInterval);
-    };
+      return () => {
+        clearInterval(moveChickenInterval);
+      };
+    }
   }, [
     currentChickenPosition,
     currentChickenPosition2,
+    currentChickenPosition3,
     currentPlayerPosition,
     lost,
     won,
+    gameOn,
   ]);
 
   function handleMove(event) {
     const currentKey = event.key;
 
     const possibleMove = checkPossibleMove(currentKey, currentPlayerPosition);
-
     if (possibleMove) {
       const newPlayerPosition = getNewPosition(
         currentKey,
@@ -130,10 +152,15 @@ export function Matrix({ level, onLevelClear }) {
         (newPlayerPosition.x === currentChickenPosition2.x &&
           newPlayerPosition.y === currentChickenPosition2.y)
       ) {
-        setLost(true);
+        if (lives > 1) {
+          resetPositions();
+          onLoseLife();
+        } else {
+          onLost();
+        }
       } else {
         setMap((prevMap) => {
-          const newMap = [...prevMap];
+          const newMap = prevMap.map((row) => [...row]);
           newMap[currentPlayerPosition.y][currentPlayerPosition.x] = 3;
           newMap[newPlayerPosition.y][newPlayerPosition.x] = 5;
           return newMap;
@@ -145,44 +172,49 @@ export function Matrix({ level, onLevelClear }) {
   }
 
   useEffect(() => {
+    setMap(matrixes[level]);
+    resetPositions();
+  }, [level]);
+
+  useEffect(() => {
     if (map.every((row) => !row.includes(2))) {
       if (level === 2) {
-        setWon(true);
+        onWon();
       } else {
         onLevelClear();
+        onGameOn();
       }
     }
   }, [map]);
 
   return (
     <StyledMatrix id="matrix" tabIndex={0} onKeyDown={handleMove}>
-      {!lost && !won ? (
-        map.map((row, index) => {
-          return (
-            <p key={index}>
-              {row.map((cell, cellIndex) => {
-                if (
-                  (index === currentChickenPosition.y &&
-                    cellIndex === currentChickenPosition.x) ||
-                  (index === currentChickenPosition2.y &&
-                    cellIndex === currentChickenPosition2.x)
-                ) {
-                  return " 🐓 ";
-                }
-                return cell === 1
-                  ? " 🟫 "
-                  : cell === 2
-                  ? " 💊 "
-                  : cell === 3
-                  ? " 🟩 "
-                  : " 🌝 ";
-              })}
-            </p>
-          );
-        })
-      ) : (
-        <div className="game-end">{lost ? "🐓Game Over🐓" : "Game Won 🌝"}</div>
-      )}
+      {map.map((row, index) => {
+        return (
+          <p key={index}>
+            {row.map((cell, cellIndex) => {
+              if (
+                (index === currentChickenPosition.y &&
+                  cellIndex === currentChickenPosition.x) ||
+                (index === currentChickenPosition2.y &&
+                  cellIndex === currentChickenPosition2.x) ||
+                (currentChickenPosition3 &&
+                  index === currentChickenPosition3.y &&
+                  cellIndex === currentChickenPosition3.x)
+              ) {
+                return " 🐓 ";
+              }
+              return cell === 1
+                ? " 🟫 "
+                : cell === 2
+                ? " 💊 "
+                : cell === 3
+                ? " 🟩 "
+                : " 🌝 ";
+            })}
+          </p>
+        );
+      })}
     </StyledMatrix>
   );
 }

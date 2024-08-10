@@ -3,7 +3,7 @@ import styled from "styled-components";
 const StyledFooter = styled.footer`
   display: grid;
   place-content: center;
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   width: 100%;
   height: 10%;
@@ -12,10 +12,10 @@ const StyledFooter = styled.footer`
   z-index: 2;
 `;
 
-export function Footer({ level }) {
+export function Footer() {
   return (
     <StyledFooter>
-      <h2>Current Level: {level}</h2>
+      <h2>Copyright by Lukas Klipp</h2>
     </StyledFooter>
   );
 }

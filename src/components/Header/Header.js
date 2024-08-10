@@ -3,12 +3,12 @@ import styled from "styled-components";
 const StyledHeader = styled.header`
   display: grid;
   place-content: center;
-  position: absolute;
+  position: fixed;
   top: 0px;
   width: 100%;
   height: 10%;
   background: darkgreen;
-  z-index: 2;
+  z-index: 3;
 `;
 
 export function Header() {
