@@ -24,7 +24,7 @@ export function Matrix({
   lost,
   won,
 }) {
-  const chickenSpeed = level > 0 ? 100 : 200;
+  const chickenSpeed = level > 0 ? 90 : 150;
   const [map, setMap] = useState(matrixes[level]);
   const [currentPlayerPosition, setCurrentPlayerPosition] = useState(
     positions[level].player
