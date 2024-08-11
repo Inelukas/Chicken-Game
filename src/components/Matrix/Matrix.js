@@ -24,7 +24,7 @@ export function Matrix({
   lost,
   won,
 }) {
-  const chickenSpeed = level > 0 ? 90 : 150;
+  const chickenSpeed = level > 0 ? 80 : 100;
   const [map, setMap] = useState(matrixes[level]);
   const [currentPlayerPosition, setCurrentPlayerPosition] = useState(
     positions[level].player
@@ -38,6 +38,15 @@ export function Matrix({
   const [currentChickenPosition3, setCurrentChickenPosition3] = useState(
     positions[level]?.chicken3
   );
+
+  const [currentChickenLastPosition, setCurrentChickenLastPosition] = useState({
+    x: "",
+    y: "",
+  });
+  const [currentChickenLastPosition2, setCurrentChickenLastPosition2] =
+    useState({ x: "", y: "" });
+  const [currentChickenLastPosition3, setCurrentChickenLastPosition3] =
+    useState({ x: "", y: "" });
 
   useEffect(() => {
     document.querySelector("#matrix").focus();
@@ -80,7 +89,22 @@ export function Matrix({
   }
 
   useEffect(() => {
-    function moveChicken(chickenPosition, setChickenPosition) {
+    const resetInterval = setInterval(() => {
+      setCurrentChickenLastPosition({ x: "", y: "" });
+      setCurrentChickenLastPosition2({ x: "", y: "" });
+      setCurrentChickenLastPosition3({ x: "", y: "" });
+    }, 2000);
+
+    return () => clearInterval(resetInterval);
+  }, []);
+
+  useEffect(() => {
+    function moveChicken(
+      chickenPosition,
+      setChickenPosition,
+      chickenLastPosition,
+      setChickenLastPosition
+    ) {
       if (lost || won) return;
 
       const randomNumber = Math.floor(Math.random() * 4);
@@ -108,17 +132,36 @@ export function Matrix({
           } else {
             onLost();
           }
-        } else {
+        } else if (
+          newChickenPosition.x !== chickenLastPosition.x ||
+          newChickenPosition.y !== chickenLastPosition.y
+        ) {
+          setChickenLastPosition(chickenPosition);
           setChickenPosition(newChickenPosition);
         }
       }
     }
     if (gameOn) {
       const moveChickenInterval = setInterval(() => {
-        moveChicken(currentChickenPosition, setCurrentChickenPosition);
-        moveChicken(currentChickenPosition2, setCurrentChickenPosition2);
+        moveChicken(
+          currentChickenPosition,
+          setCurrentChickenPosition,
+          currentChickenLastPosition,
+          setCurrentChickenLastPosition
+        );
+        moveChicken(
+          currentChickenPosition2,
+          setCurrentChickenPosition2,
+          currentChickenLastPosition2,
+          setCurrentChickenLastPosition2
+        );
         if (currentChickenPosition3) {
-          moveChicken(currentChickenPosition3, setCurrentChickenPosition3);
+          moveChicken(
+            currentChickenPosition3,
+            setCurrentChickenPosition3,
+            currentChickenLastPosition3,
+            setCurrentChickenLastPosition3
+          );
         }
       }, chickenSpeed);
 
@@ -131,9 +174,16 @@ export function Matrix({
     currentChickenPosition2,
     currentChickenPosition3,
     currentPlayerPosition,
+    currentChickenLastPosition,
+    currentChickenLastPosition2,
+    currentChickenLastPosition3,
     lost,
     won,
     gameOn,
+    lives,
+    chickenSpeed,
+    onLost,
+    onLoseLife,
   ]);
 
   function handleMove(event) {
