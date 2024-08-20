@@ -4,12 +4,89 @@ import { matrixes, positions } from "../../lib/data";
 
 const StyledMatrix = styled.div`
   display: grid;
-  position: absolute;
   place-content: center;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   font-size: 40px;
   background: green;
+  overflow: hidden;
+
+  @media (max-width: 1200px) {
+    font-size: 36px;
+  }
+
+  @media (max-width: 900px) {
+    font-size: 30px;
+  }
+
+  @media (max-width: 600px) {
+    font-size: 24px;
+  }
+
+  p {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+
+    @media (max-width: 600px) {
+      font-size: 20px;
+    }
+  }
+`;
+
+const StyledButtons = styled.div`
+  position: absolute;
+  right: 10vw;
+  bottom: 40vh;
+  font-size: 50px;
+
+  div {
+    position: relative;
+    width: 150px;
+    height: 150px;
+
+    button {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+    }
+
+    .up {
+      top: 0px;
+      left: 50px;
+    }
+
+    .down {
+      bottom: 0px;
+      left: 50px;
+    }
+
+    .left {
+      top: 50px;
+      left: 0px;
+    }
+
+    .right {
+      top: 50px;
+      right: 0px;
+    }
+  }
+
+  @media (max-width: 1200px) {
+    transform: scale(0.8);
+    right: 2vw;
+  }
+
+  @media (max-width: 900px) {
+    transform: scale(0.6);
+    bottom: 7vh;
+    right: 10vw;
+  }
+
+  @media (max-width: 600px) {
+    bottom: 18vh;
+    right: 37vw;
+  }
 `;
 
 export function Matrix({
@@ -212,7 +289,7 @@ export function Matrix({
   ]);
 
   function handleMove(event) {
-    const currentKey = event.key;
+    const currentKey = typeof event === "string" ? event : event.key;
 
     const possibleMove = checkPossibleMove(currentKey, currentPlayerPosition);
     if (possibleMove) {
@@ -266,33 +343,51 @@ export function Matrix({
   }, [map]);
 
   return (
-    <StyledMatrix ref={matrixRef} tabIndex={0} onKeyDown={handleMove}>
-      {map.map((row, index) => {
-        return (
-          <p key={index}>
-            {row.map((cell, cellIndex) => {
-              if (
-                (index === currentChickenPositions.chicken1.y &&
-                  cellIndex === currentChickenPositions.chicken1.x) ||
-                (index === currentChickenPositions.chicken2.y &&
-                  cellIndex === currentChickenPositions.chicken2.x) ||
-                (currentChickenPositions.chicken3 &&
-                  index === currentChickenPositions.chicken3.y &&
-                  cellIndex === currentChickenPositions.chicken3.x)
-              ) {
-                return " 🐓 ";
-              }
-              return cell === 1
-                ? " 🟫 "
-                : cell === 2
-                ? " 💊 "
-                : cell === 3
-                ? " 🟩 "
-                : " 🌝 ";
-            })}
-          </p>
-        );
-      })}
-    </StyledMatrix>
+    <>
+      <StyledMatrix ref={matrixRef} tabIndex={0} onKeyDown={handleMove}>
+        {map.map((row, index) => {
+          return (
+            <p key={index}>
+              {row.map((cell, cellIndex) => {
+                if (
+                  (index === currentChickenPositions.chicken1.y &&
+                    cellIndex === currentChickenPositions.chicken1.x) ||
+                  (index === currentChickenPositions.chicken2.y &&
+                    cellIndex === currentChickenPositions.chicken2.x) ||
+                  (currentChickenPositions.chicken3 &&
+                    index === currentChickenPositions.chicken3.y &&
+                    cellIndex === currentChickenPositions.chicken3.x)
+                ) {
+                  return " 🐓 ";
+                }
+                return cell === 1
+                  ? " 🟫 "
+                  : cell === 2
+                  ? " 💊 "
+                  : cell === 3
+                  ? " 🟩 "
+                  : " 🌝 ";
+              })}
+            </p>
+          );
+        })}
+      </StyledMatrix>
+      <StyledButtons>
+        <div>
+          <button className="up" onClick={() => handleMove("ArrowUp")}>
+            ↑
+          </button>
+          <button className="left" onClick={() => handleMove("ArrowLeft")}>
+            ←
+          </button>
+          <button className="right" onClick={() => handleMove("ArrowRight")}>
+            →
+          </button>
+          <button className="down" onClick={() => handleMove("ArrowDown")}>
+            ↓
+          </button>
+        </div>
+      </StyledButtons>
+    </>
   );
 }

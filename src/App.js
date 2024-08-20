@@ -4,6 +4,14 @@ import { Header } from "./components/Header/Header";
 import { Footer } from "./components/Footer/Footer";
 import { useState } from "react";
 import { Info } from "./components/Info/Info";
+import styled from "styled-components";
+
+const StyledBox = styled.div`
+  display: "flex";
+  justifycontent: "center";
+  alignitems: "flex-start";
+  paddingtop: "10%";
+`;
 
 function App() {
   const [gameOn, setGameOn] = useState(false);
@@ -37,37 +45,39 @@ function App() {
     <>
       <GlobalStyle />
       <Header />
-      <Info
-        lives={lives}
-        level={level}
-        onGameOn={handleGameOn}
-        gameOn={gameOn}
-      />
-      {!lost && !won ? (
-        <Matrix
-          gameOn={gameOn}
-          level={level}
+      <StyledBox>
+        <Info
           lives={lives}
-          onLevelClear={handleLevelClear}
-          onLoseLife={handleLoseLife}
+          level={level}
           onGameOn={handleGameOn}
-          onLost={handleLost}
-          onWon={handleWon}
-          lost={lost}
-          won={won}
+          gameOn={gameOn}
         />
-      ) : (
-        <div
-          style={{
-            height: "100vh",
-            display: "grid",
-            placeContent: "center",
-            fontSize: "70px",
-          }}
-        >
-          {lost ? "🐓Game Over🐓" : "Game Won 🌝"}
-        </div>
-      )}
+        {!lost && !won ? (
+          <Matrix
+            gameOn={gameOn}
+            level={level}
+            lives={lives}
+            onLevelClear={handleLevelClear}
+            onLoseLife={handleLoseLife}
+            onGameOn={handleGameOn}
+            onLost={handleLost}
+            onWon={handleWon}
+            lost={lost}
+            won={won}
+          />
+        ) : (
+          <div
+            style={{
+              height: "100vh",
+              display: "grid",
+              placeContent: "center",
+              fontSize: "70px",
+            }}
+          >
+            {lost ? "🐓Game Over🐓" : "Game Won 🌝"}
+          </div>
+        )}
+      </StyledBox>
       <Footer />
     </>
   );

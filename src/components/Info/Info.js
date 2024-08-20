@@ -19,6 +19,17 @@ export const StyledInfo = styled.div`
   button {
     padding: 5px;
   }
+
+  @media screen and (max-width: 1200px) {
+    transform: scale(0.9);
+    bottom: 10%;
+    left: 35vw;
+    margin: 0%;
+    z-index: 3;
+    gap: 5px;
+    height: 10%;
+    width: 30%;
+  }
 `;
 
 export function Info({ lives, level, onGameOn, gameOn }) {
