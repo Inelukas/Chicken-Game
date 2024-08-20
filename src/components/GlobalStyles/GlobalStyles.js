@@ -12,6 +12,7 @@ export const GlobalStyle = createGlobalStyle`
     height: 100%;
     background: green;
     font-size: 16px;
+    overflow: hidden;
 
     @media (max-width: 1200px) {
       font-size: 15px;
