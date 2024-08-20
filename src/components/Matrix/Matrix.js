@@ -19,9 +19,9 @@ const StyledMatrix = styled.div`
     font-size: 30px;
   }
 
-  @media (max-width: 600px) {
+  /* @media (max-width: 600px) {
     font-size: 24px;
-  }
+  } */
 
   p {
     display: flex;
@@ -78,7 +78,7 @@ const StyledButtons = styled.div`
   }
 
   @media (max-width: 900px) {
-    transform: scale(0.6);
+    transform: scale(0.7);
     bottom: 7vh;
     right: 10vw;
   }
@@ -126,6 +126,25 @@ export function Matrix({
       matrixRef.current.focus();
     }
   }, [level, gameOn]);
+
+  useEffect(() => {
+    function handleBlur() {
+      if (matrixRef.current) {
+        matrixRef.current.focus();
+      }
+    }
+
+    const playerElement = matrixRef.current;
+    if (playerElement) {
+      playerElement.addEventListener("blur", handleBlur);
+    }
+
+    return () => {
+      if (playerElement) {
+        playerElement.removeEventListener("blur", handleBlur);
+      }
+    };
+  }, []);
 
   function checkPossibleMove(currentDirection, currentPosition) {
     if (!gameOn) {
