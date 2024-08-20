@@ -19,18 +19,9 @@ const StyledMatrix = styled.div`
     font-size: 30px;
   }
 
-  /* @media (max-width: 600px) {
-    font-size: 24px;
-  } */
-
-  p {
-    display: flex;
-    justify-content: center;
-    margin: 0;
-
-    @media (max-width: 600px) {
-      font-size: 20px;
-    }
+  @media (max-width: 600px) {
+    padding-bottom: 40%;
+    font-size: 26px;
   }
 `;
 
@@ -78,13 +69,14 @@ const StyledButtons = styled.div`
   }
 
   @media (max-width: 900px) {
-    transform: scale(0.7);
+    transform: scale(0.9);
     bottom: 7vh;
     right: 10vw;
   }
 
   @media (max-width: 600px) {
-    bottom: 18vh;
+    transform: scale(1.2);
+    bottom: 23vh;
     right: 37vw;
   }
 `;
