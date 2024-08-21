@@ -8,7 +8,6 @@ const StyledMatrix = styled.div`
   width: 100vw;
   height: 100vh;
   font-size: 40px;
-  background: green;
   overflow: hidden;
 
   @media (max-width: 1200px) {

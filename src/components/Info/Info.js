@@ -11,7 +11,7 @@ export const StyledInfo = styled.div`
   margin: 25% 5%;
   width: 15%;
   height: 20%;
-  background: lightgreen;
+  background: var(--side-color);
   border-radius: 20px;
   padding: 5px;
   z-index: 2;

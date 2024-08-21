@@ -5,11 +5,10 @@ const StyledFooter = styled.footer`
   bottom: 0;
   width: 100%;
   height: 50px;
-  background: darkgreen;
+  background: var(--secondary-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
   font-size: 1rem;
 
   @media (max-width: 900px) {

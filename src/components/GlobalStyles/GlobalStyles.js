@@ -1,6 +1,15 @@
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle`
+
+:root {
+    --primary-color: #387F39;
+    --secondary-color: #A2CA71;
+    --side-color: #BEDC74;
+    --text-color: #000000;
+    --custom-image: url("https://www.transparenttextures.com/patterns/axiom-pattern.png");
+  }
+
   * {
     margin: 0;
     padding: 0;
@@ -10,7 +19,8 @@ export const GlobalStyle = createGlobalStyle`
   html, body {
     width: 100%;
     height: 100%;
-    background: green;
+    background-color: var(--primary-color);
+background-image: var(--custom-image);
     font-size: 16px;
     overflow: hidden;
 
