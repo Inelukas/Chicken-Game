@@ -21,7 +21,7 @@ const StyledMatrix = styled.div`
 
   @media (max-width: 600px) {
     padding-bottom: 40%;
-    font-size: 26px;
+    font-size: 22px;
   }
 `;
 
