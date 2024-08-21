@@ -71,7 +71,7 @@ const StyledButtons = styled.div`
   @media (max-width: 900px) {
     transform: scale(0.9);
     bottom: 7vh;
-    right: 10vw;
+    right: 5vw;
   }
 
   @media (max-width: 600px) {

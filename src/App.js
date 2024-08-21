@@ -7,10 +7,20 @@ import { Info } from "./components/Info/Info";
 import styled from "styled-components";
 
 const StyledBox = styled.div`
-  display: "flex";
-  justifycontent: "center";
-  alignitems: "flex-start";
-  paddingtop: "10%";
+  .after-play {
+    height: 100vh;
+    width: 100vw;
+    display: grid;
+    place-content: center;
+
+    h1 {
+      font-size: 100px;
+
+      @media (max-width: 1200px) {
+        font-size: 50px;
+      }
+    }
+  }
 `;
 
 function App() {
@@ -34,11 +44,18 @@ function App() {
   }
 
   function handleLost() {
-    setLost(true);
+    setLost(!lost);
   }
 
   function handleWon() {
     setWon(true);
+  }
+
+  function handleNewGame() {
+    setLost(false);
+    setLevel(0);
+    setLives(3);
+    setGameOn(false);
   }
 
   return (
@@ -51,6 +68,7 @@ function App() {
           level={level}
           onGameOn={handleGameOn}
           gameOn={gameOn}
+          onNewGame={handleNewGame}
         />
         {!lost && !won ? (
           <Matrix
@@ -64,17 +82,11 @@ function App() {
             onWon={handleWon}
             lost={lost}
             won={won}
+            onLevel={setLevel}
           />
         ) : (
-          <div
-            style={{
-              height: "100vh",
-              display: "grid",
-              placeContent: "center",
-              fontSize: "70px",
-            }}
-          >
-            {lost ? "🐓Game Over🐓" : "Game Won 🌝"}
+          <div className="after-play">
+            {lost ? <h1>🐓Game Over🐓</h1> : <h1>Game Won 🌝</h1>}
           </div>
         )}
       </StyledBox>
